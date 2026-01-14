@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Laundry Services — Book Now</title>
+  <meta name="description" content="Laundry Services Web App - Book laundry appointments easily" />
+
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.emailjs.com/sdk/3.2.0/email.min.js"></script>
+
+  <style>
+    :root {
+      --accent: #0f6cff;
+      --muted: #6b7280;
+      --bg: #f7f7fb;
+      --card: #ffffff;
+      --success: #1f9d58;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: #111;
+      line-height: 1.5
+    }
+
+    /* NAVBAR */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      background: linear-gradient(90deg, #fff, #fafcff);
+      box-shadow: 0 1px 8px rgba(16, 24, 40, .06);
+      position: sticky;
+      top: 0;
+      z-index: 50
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      color: var(--accent)
+    }
+
+    .logo img {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      object-fit: cover
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 18px;
+      align-items: center
+    }
+
+    .nav-links a {
+      color: inherit;
+      text-decoration: none;
+      font-weight: 600
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .btn {
+      background: var(--accent);
+      color: white;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 0;
+      cursor: pointer;
+      font-weight: 700
+    }
+
+    .ghost {
+      background: transparent;
+      border: 1px solid #e6e9ef;
+      padding: 8px 12px;
+      border-radius: 8px
+    }
+
+    /* HERO */
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 28px;
+      padding: 48px 20px;
+      max-width: 1100px;
+      margin: 20px auto
+    }
+
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      justify-content: center
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 36px
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted)
+    }
+
+    .hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(16, 24, 40, .06)
+    }
+
+    /* ACHIEVEMENTS */
+    .achievements {
+      width: 100%;
+      background: rgb(59, 122, 206);
+      padding: 18px 20px;
+      margin: 12px 0;
+      box-shadow: 0 6px 18px rgba(16, 24, 40, .04);
+      font-size: 28px;
+    }
+
+    .ach-grid {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      max-width: 1100px;
+      margin: 0 auto;
+      font-size: 28px;
+    }
+
+    .ach-item {
+      text-align: center;
+      font-size: 20px;
+    }
+
+    .ach-item h3 {
+      margin: 0;
+      font-size: 20px;
+      color: black
+    }
+
+    .ach-item p {
+      margin: 6px 0 0;
+      color: black;
+      font-size: 20px;
+    }
+
+    .ach-1 {
+      font-size: 30px;
+    }
+
+    /* MAIN BOOKING SECTION */
+    .booking {
+      max-width: 1100px;
+      margin: 28px auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 22px
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 8px 30px rgba(2, 6, 23, .04)
+    }
+
+    /* left services */
+    .services-list {
+      display: grid;
+      gap: 12px
+    }
+
+    .service {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #f0f2f7
+    }
+
+    .service-info {
+      display: flex;
+      flex-direction: column
+    }
+
+    .service h4 {
+      margin: 0
+    }
+
+    .service small {
+      color: var(--muted)
+    }
+
+    .service-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center
+    }
+
+    .service-controls button {
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 0;
+      cursor: pointer
+    }
+
+    .add {
+      background: #e8f1ff;
+      color: var(--accent);
+      font-weight: 700
+    }
+
+    .remove {
+      background: #fff6f6;
+      color: #db3b3b;
+      border: 1px solid #ffdede
+    }
+
+    /* right cart */
+    .cart-empty {
+      height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted)
+    }
+
+    .cart-items {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 260px;
+      overflow: auto
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px;
+      border-radius: 8px;
+      background: #fafbff
+    }
+
+    .total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      font-weight: 800;
+      font-size: 18px
+    }
+
+    .booking-form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px
+    }
+
+    .input {
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #e6e9ef
+    }
+
+    .muted-sm {
+      color: var(--muted);
+      font-size: 13px
+    }
+
+    .thanks {
+      color: var(--success);
+      margin-top: 10px;
+      font-weight: 700;
+      display: none
+    }
+
+    /* QUALITY */
+    .qualities {
+      max-width: 1100px;
+      margin: 20px auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      padding: 0 20px
+    }
+
+    .quality {
+      background: var(--card);
+      padding: 14px;
+      border-radius: 10px;
+      text-align: center
+    }
+
+    /* NEWSLETTER & FOOTER */
+    .newsletter {
+      max-width: 1100px;
+      margin: 20px auto;
+      padding: 18px;
+      background: rgb(113, 203, 255);
+      border-radius: 12px;
+      display: flex;
+      gap: 12px;
+      align-items: center
+    }
+
+    .footer {
+      margin-top: 18px;
+      background: white;
+      color: black;
+      padding: 18px;
+      border-radius: 10px;
+      max-width: 1100px;
+      margin-left: auto;
+      margin-right: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    /* responsive */
+    @media (max-width:920px) {
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 28px 14px
+      }
+
+      .booking {
+        grid-template-columns: 1fr;
+        padding: 14px
+      }
+
+      .qualities {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .hero img {
+        height: 260px
+      }
+    }
+
+    @media (max-width:540px) {
+      .nav-links {
+        display: none
+      }
+
+      .hero h1 {
+        font-size: 26px
+      }
+
+      .qualities {
+        grid-template-columns: 1fr
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <header class="nav" role="banner">
+    <div class="logo" aria-label="logo">
+      <img src="laundry_service.webp" alt="logo">
+      <div>LaundryPro</div>
+    </div>
+
+    <nav class="nav-links" role="navigation" aria-label="Primary">
+      <a href="#home">Home</a>
+      <a href="#services">Services</a>
+      <a href="#about">About Us</a>
+      <a href="#contact">Contact Us</a>
+    </nav>
+
+    <div class="nav-right">
+      <div style="font-weight:700">Shreeya</div>
+      <button class="btn" id="cta-hero">Book a Service Today</button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section id="home" class="hero" aria-labelledby="hero-title">
+    <div class="hero-left">
+      <h1 id="hero-title">Make laundry easy — fast pickup, quick delivery</h1>
+      <p>Premium wash & fold, express dry cleaning, and subscription plans. Book a slot, add items, and we’ll handle the
+        rest.</p>
+      <div style="display:flex;gap:12px;margin-top:8px">
+        <button class="btn" id="hero-book">Book a Service Today</button>
+        <a class="ghost" href="#services">Explore Services</a>
+      </div>
+    </div>
+    <div>
+      <img src="laundry_service.webp" alt="laundry hero">
+    </div>
+  </section>
+
+  <!-- ACHIEVEMENTS -->
+  <section class="achievements" aria-hidden="false">
+    <div class="ach-1">
+      <div class="ach-grid">
+        <p><b>Our achievements</b></p>
+        <div class="ach-item">
+          <h3>15+</h3>
+          <p>Laundry Services</p>
+        </div>
+        <div class="ach-item">
+          <h3>240+</h3>
+          <p>Happy Customers</p>
+        </div>
+        <div class="ach-item">
+          <h3>2+ Years</h3>
+          <p>Years of Experience</p>
+        </div>
+      </div>
+  </section>
+
+  <!-- BOOKING / SERVICES -->
+  <main class="booking" id="services" aria-labelledby="services-title">
+    <!-- Left: Services -->
+    <section class="card">
+      <h3 id="services-title">Available Services</h3>
+      <p class="muted-sm">Add items to your cart. Click "Add Item" to include in booking.</p>
+
+      <div class="services-list" id="servicesList">
+        <!-- items inserted by JS -->
+      </div>
+
+      <div style="margin-top:12px;color:var(--muted);font-size:14px">
+        <strong>Tip:</strong> Add items to the cart and then complete booking on the right.
+      </div>
+    </section>
+
+    <!-- Right: Cart + Booking Form -->
+    <aside style="display:flex;flex-direction:column;gap:12px">
+      <div class="card">
+        <h4>Cart</h4>
+        <div id="cartArea" class="cart-empty">No items added yet</div>
+        <div class="total"><span>Total</span><span id="totalAmount">₹0</span></div>
+      </div>
+
+      <div class="card">
+        <h4>Book Now</h4>
+        <form id="bookingForm" class="booking-form">
+          <input class="input" id="fullname" name="fullname" placeholder="Full name" required />
+          <input class="input" id="email" name="email" type="email" placeholder="Email" required />
+          <input class="input" id="phone" name="phone" type="text" minlength="10" maxlength="10" pattern="[0-9]{10}"
+            placeholder="Phone number" required />
+
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <button type="submit" class="btn">Book Now</button>
+            <button type="button" id="clearCart" class="ghost">Clear Cart</button>
+          </div>
+        </form>
+        <div id="thankMessage" class="thanks">Thank you for booking the service! We will get back to you soon.</div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- QUALITY DESCRIPTION -->
+  <section class="qualities" id="about">
+    <div class="quality">
+      <h4>Premium Services</h4>
+      <p class="muted-sm">High-quality detergents and careful handling.</p>
+    </div>
+    <div class="quality">
+      <h4>Quick Support</h4>
+      <p class="muted-sm">Chat and call support available.</p>
+    </div>
+    <div class="quality">
+      <h4>Timely Delivery</h4>
+      <p class="muted-sm">Fast turnaround with live tracking.</p>
+    </div>
+    <div class="quality">
+      <h4>Affordable Prices</h4>
+      <p class="muted-sm">Transparent pricing with no hidden fees.</p>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="newsletter" id="contact">
+    <div style="flex:1">
+      <strong>Subscribe to our newsletter</strong>
+      <p class="muted-sm">Get offers and updates directly in your inbox.</p>
+    </div>
+    <div style="display:flex;gap:8px">
+      <input id="newsName" class="input" placeholder="Full name" />
+      <input id="newsEmail" class="input" placeholder="Email" />
+      <button id="subscribeBtn" class="btn">Subscribe</button>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo" aria-label="footer">
+    <div style="display:flex;align-items:center;gap:12px">
+      <img src="img.webp" alt="logo" style="width:36px;height:36px;border-radius:8px">
+      <div>
+        <div style="font-weight:700">LaundryPro</div>
+        <small style="color:black">Reliable laundry since 2023</small>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;align-items:aside ;">
+      <a href="#about" style="color:black;text-decoration:none"><b>About Us</b><br> Lorem ipsum dolor sit amet </a>
+      <a href="#contact" style="color:black;text-decoration:none"><b>Contact</b><br> laundryservice.com</a>
+      <div style="color:black">Follow: <br>[FB] [IG] [TW]</div>
+    </div>
+  </footer>
+
+  <script>
+    // ----- DATA: list of services -----
+    const services = [
+      { id: 's1', name: 'Wash & Fold (per kg)', price: 50 },
+      { id: 's2', name: 'Dry Cleaning (per item)', price: 120 },
+      { id: 's3', name: 'Ironing (per item)', price: 30 },
+      { id: 's4', name: 'Premium Wash (per kg)', price: 80 },
+      { id: 's5', name: 'Shoe Cleaning (per pair)', price: 150 }
+    ];
+
+    // ----- STATE -----
+    const cart = {}; // id -> qty
+
+    // DOM refs
+    const servicesList = document.getElementById('servicesList');
+    const cartArea = document.getElementById('cartArea');
+    const totalAmountEl = document.getElementById('totalAmount');
+    const clearCartBtn = document.getElementById('clearCart');
+    const bookingForm = document.getElementById('bookingForm');
+    const thankMessage = document.getElementById('thankMessage');
+
+    // Render services list
+    function renderServices() {
+      servicesList.innerHTML = '';
+      services.forEach(s => {
+        const el = document.createElement('div');
+        el.className = 'service';
+        el.innerHTML = `
+        <div class="service-info">
+          <h4>${s.name}</h4>
+          <small>Price: ₹${s.price}</small>
+        </div>
+        <div class="service-controls">
+          <button class="remove" data-id="${s.id}">Remove Now</button>
+          <button class="add" data-id="${s.id}">Add Item</button>
+        </div>
+      `;
+        servicesList.appendChild(el);
+      });
+    }
+
+    // Update cart display
+    function renderCart() {
+      const keys = Object.keys(cart);
+      if (keys.length === 0) {
+        cartArea.className = 'cart-empty';
+        cartArea.textContent = 'No items added yet';
+        totalAmountEl.textContent = '₹0';
+        return;
+      }
+
+      cartArea.className = '';
+      cartArea.innerHTML = '';
+      let total = 0;
+      const itemsDiv = document.createElement('div');
+      itemsDiv.className = 'cart-items';
+
+      keys.forEach(id => {
+        const svc = services.find(s => s.id === id);
+        const qty = cart[id];
+        const lineTotal = svc.price * qty;
+        total += lineTotal;
+
+        const item = document.createElement('div');
+        item.className = 'cart-item';
+        item.innerHTML = `
+        <div>
+          <div style="font-weight:700">${svc.name}</div>
+          <div class="muted-sm">Qty: ${qty} × ₹${svc.price}</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button data-action="dec" data-id="${id}" class="ghost">-</button>
+          <button data-action="inc" data-id="${id}" class="ghost">+</button>
+          <button data-action="del" data-id="${id}" class="ghost">x</button>
+        </div>
+      `;
+        itemsDiv.appendChild(item);
+      });
+
+      cartArea.appendChild(itemsDiv);
+      totalAmountEl.textContent = '₹' + total;
+    }
+
+    // Modify cart
+    function addToCart(id) {
+      cart[id] = (cart[id] || 0) + 1;
+      renderCart();
+    }
+    function removeFromCart(id) {
+      if (!cart[id]) return;
+      delete cart[id];
+      renderCart();
+    }
+    function changeQty(id, delta) {
+      if (!cart[id]) return;
+      cart[id] += delta;
+      if (cart[id] <= 0) delete cart[id];
+      renderCart();
+    }
+    function clearCart() {
+      for (const k in cart) delete cart[k];
+      renderCart();
+    }
+
+    // delegate click on services
+    servicesList.addEventListener('click', (e) => {
+      const id = e.target.dataset.id;
+      if (!id) return;
+      if (e.target.classList.contains('add')) addToCart(id);
+      if (e.target.classList.contains('remove')) {
+        // "Remove Now" — remove one if exists, else show alert
+        if (cart[id]) changeQty(id, -1);
+        else alert('No item in cart to remove.');
+        renderCart();
+      }
+    });
+
+    // delegate cart actions
+    cartArea.addEventListener('click', (e) => {
+      const id = e.target.dataset.id;
+      const action = e.target.dataset.action;
+      if (!action || !id) return;
+      if (action === 'inc') changeQty(id, +1);
+      if (action === 'dec') changeQty(id, -1);
+      if (action === 'del') removeFromCart(id);
+    });
+
+    clearCartBtn.addEventListener('click', clearCart);
+
+    // HERO button scroll behavior
+    document.getElementById('hero-book').addEventListener('click', () => {
+      document.getElementById('services').scrollIntoView({ behavior: 'smooth' });
+    });
+    document.getElementById('cta-hero').addEventListener('click', () => {
+      document.getElementById('services').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // INITIAL render
+    renderServices();
+    renderCart();
+
+
+    const EMAILJS_USER_ID = 'SxyY4JKihP7EkD-Jl';
+    const EMAILJS_SERVICE_ID = 'service_ovs60i4';
+    const EMAILJS_TEMPLATE_ID = 'template_7nddwen';
+
+    (function () {
+      try {
+        if (emailjs && emailjs.init) {
+          emailjs.init(EMAILJS_USER_ID);
+        }
+      } catch (err) {
+        console.warn('EmailJS not initialized — replace USER_ID placeholder to enable email sending.');
+      }
+    })();
+
+    // Build items list string
+    function buildItemsSummary() {
+      const keys = Object.keys(cart);
+      if (keys.length === 0) return 'No items';
+      return keys.map(id => {
+        const s = services.find(x => x.id === id);
+        return `${s.name} — Qty: ${cart[id]} (₹${s.price} each)`;
+      }).join(' | ');
+    }
+
+    // calculate total numeric
+    function calculateTotal() {
+      return Object.keys(cart).reduce((acc, id) => {
+        const svc = services.find(s => s.id === id);
+        return acc + svc.price * cart[id];
+      }, 0);
+    }
+
+    // Submit booking form
+    bookingForm.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      const fullname = document.getElementById('fullname').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+
+      if (!fullname || !email || !phone) {
+        alert('Please fill all fields.');
+        return;
+      }
+      if (Object.keys(cart).length === 0) {
+        alert('Please add at least one item to the cart before booking.');
+        return;
+      }
+
+      // Prepare parameters for email template
+      const templateParams = {
+        fullname: fullname,
+        to_email: email,   // 👈 THIS is what EmailJS uses to send to the customer
+        phone: phone,
+        items: buildItemsSummary(),
+        total: '₹' + calculateTotal(),
+        message: `Hello ${fullname},
+
+Thank you for booking with LaundryPro! Your service request has been successfully received.
+🧺 Services: ${buildItemsSummary()}
+💰 Total Amount: ₹${calculateTotal()}
+Our team will contact you shortly.
+
+LaundryPro Team`
+      };
+
+
+
+
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams, EMAILJS_USER_ID)
+        .then(function (response) {
+          alert("Email sent successfully!");
+          thankMessage.style.display = 'block';
+          bookingForm.reset();
+          clearCart();
+        })
+        .catch(function (error) {
+          console.error("EmailJS Error:", error);
+          alert("Email failed: " + JSON.stringify(error));
+        });
+
+    });
+
+    // Newsletter subscribe (simple client-side demonstration)
+    document.getElementById('subscribeBtn').addEventListener('click', function () {
+      const n = document.getElementById('newsName').value.trim();
+      const e = document.getElementById('newsEmail').value.trim();
+      if (!n || !e) { alert('Enter name and email to subscribe.'); return; }
+      // Ideally you'd send this to a backend. For assignment demo, show alert.
+      alert('Thanks for subscribing, ' + n + '!');
+      document.getElementById('newsName').value = '';
+      document.getElementById('newsEmail').value = '';
+    });
+
+  </script>
+</body>
+
+</html>
