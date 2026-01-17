@@ -1,6 +1,6 @@
-#Laundry mart
+# Laundry mart
 this is a laundry management project
-##features
+## features
 - customer management
 - order traking
 - laundry services details
@@ -8,5 +8,5 @@ this is a laundry management project
 - HTML
 - CSS
 - JAVASCRIPT
-##Author
+## Author
 Shreeya Bhat
